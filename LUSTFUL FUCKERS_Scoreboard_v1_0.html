@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lustful Fuckers Scoreboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0a0008;
+  --panel: #150010;
+  --border: #5a0040;
+  --accent: #e0008c;        /* magenta */
+  --accent-dim: #900060;
+  --accent2: #9b00e8;       /* purple */
+  --accent2-dim: #5a0090;
+  --crimson: #dc143c;       /* crimson */
+  --gold: #ffc83a;
+  --silver: #c0c8d4;
+  --bronze: #cd7f32;
+  --white: #f0e6ef;
+  --gray: #7a6078;
+  --gallons: #cc44ff;       /* bright purple for gallons */
+  --partners: #ff4488;      /* hot pink/magenta for partners */
+  --bar-bg: #200018;
+}
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: 'Rajdhani', sans-serif;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Header ── */
+.header {
+  text-align: center;
+  padding: 16px 0 8px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, #1a0015 0%, var(--bg) 100%);
+  flex-shrink: 0;
+}
+
+.header h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: var(--accent);
+  text-shadow: 0 0 24px rgba(220, 0, 140, 0.5), 0 0 48px rgba(155, 0, 232, 0.3);
+}
+
+.header .subtitle {
+  font-size: 14px;
+  color: var(--gray);
+  letter-spacing: 2px;
+  margin-top: 2px;
+}
+
+/* ── Phase indicator ── */
+.phase-bar {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 0;
+  flex-shrink: 0;
+}
+
+.phase-pill {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  color: var(--gray);
+  background: transparent;
+  transition: all 0.5s ease;
+  letter-spacing: 1px;
+}
+
+.phase-pill.active {
+  color: var(--white);
+  background: var(--crimson);
+  border-color: var(--accent);
+  box-shadow: 0 0 14px rgba(220, 20, 60, 0.6), 0 0 28px rgba(224, 0, 140, 0.3);
+}
+
+/* ── Scoreboard area ── */
+.board-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 20px 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Phase title ── */
+.phase-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 8px;
+  letter-spacing: 3px;
+  transition: all 0.5s ease;
+}
+
+.phase-title.top10 { color: var(--accent); text-shadow: 0 0 16px rgba(220, 0, 140, 0.4); }
+.phase-title.top5  { color: var(--accent2); text-shadow: 0 0 16px rgba(155, 0, 232, 0.4); }
+.phase-title.top3  { color: var(--crimson); text-shadow: 0 0 20px rgba(220, 20, 60, 0.6); }
+
+/* ── Leaderboard list ── */
+.leaderboard {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.player-row {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  transition: all 0.4s ease;
+  animation: slideIn 0.4s ease backwards;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.player-row:nth-child(1) { animation-delay: 0.05s; }
+.player-row:nth-child(2) { animation-delay: 0.10s; }
+.player-row:nth-child(3) { animation-delay: 0.15s; }
+.player-row:nth-child(4) { animation-delay: 0.20s; }
+.player-row:nth-child(5) { animation-delay: 0.25s; }
+.player-row:nth-child(6) { animation-delay: 0.30s; }
+.player-row:nth-child(7) { animation-delay: 0.35s; }
+.player-row:nth-child(8) { animation-delay: 0.40s; }
+.player-row:nth-child(9) { animation-delay: 0.45s; }
+.player-row:nth-child(10) { animation-delay: 0.50s; }
+
+/* Podium rows (top 3 mode) */
+.player-row.podium {
+  padding: 14px 16px;
+  border-radius: 8px;
+}
+
+.player-row.rank-1 {
+  border-color: var(--crimson);
+  background: linear-gradient(90deg, rgba(220, 20, 60, 0.15) 0%, var(--panel) 60%);
+}
+.player-row.rank-2 {
+  border-color: var(--accent2);
+  background: linear-gradient(90deg, rgba(155, 0, 232, 0.12) 0%, var(--panel) 60%);
+}
+.player-row.rank-3 {
+  border-color: var(--accent);
+  background: linear-gradient(90deg, rgba(220, 0, 140, 0.10) 0%, var(--panel) 60%);
+}
+
+/* Rank number / medal */
+.rank-num {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  width: 40px;
+  text-align: center;
+  flex-shrink: 0;
+  color: var(--gray);
+}
+.rank-1 .rank-num { color: var(--crimson); font-size: 24px; }
+.rank-2 .rank-num { color: var(--accent2); font-size: 22px; }
+.rank-3 .rank-num { color: var(--accent);  font-size: 20px; }
+
+.medal { font-size: 22px; }
+.podium .medal { font-size: 32px; }
+
+/* Player name */
+.player-name {
+  flex: 1;
+  font-size: 18px;
+  font-weight: 600;
+  margin-left: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.podium .player-name { font-size: 24px; }
+
+/* Points */
+.player-pts {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-left: 8px;
+  flex-shrink: 0;
+  min-width: 70px;
+  text-align: right;
+}
+.podium .player-pts { font-size: 20px; }
+.rank-1 .player-pts { color: var(--crimson); }
+
+/* Partner count */
+.partner-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--partners);
+  margin-left: 8px;
+  flex-shrink: 0;
+  min-width: 44px;
+  text-align: center;
+}
+.podium .partner-count { font-size: 16px; }
+
+/* Gallons */
+.player-gallons {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gallons);
+  margin-left: 8px;
+  flex-shrink: 0;
+  min-width: 62px;
+  text-align: right;
+  font-family: 'Rajdhani', sans-serif;
+}
+.podium .player-gallons { font-size: 15px; }
+
+/* Score bar (top 3 mode) */
+.score-bar-wrap {
+  width: 100%;
+  height: 6px;
+  background: var(--bar-bg);
+  border-radius: 3px;
+  margin-top: 6px;
+  overflow: hidden;
+}
+.score-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1s ease;
+}
+.rank-1 .score-bar-fill { background: var(--crimson); }
+.rank-2 .score-bar-fill { background: var(--accent2); }
+.rank-3 .score-bar-fill { background: var(--accent); }
+
+/* ── Timer bar ── */
+.timer-bar {
+  height: 3px;
+  background: var(--bar-bg);
+  flex-shrink: 0;
+  margin-top: 8px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.timer-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--crimson), var(--accent2), var(--accent));
+  transition: width 1s linear;
+  border-radius: 2px;
+}
+
+/* ── No data ── */
+.no-data {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray);
+  font-size: 20px;
+  letter-spacing: 2px;
+}
+.no-data .icon { font-size: 48px; margin-bottom: 12px; }
+
+/* ── Footer ── */
+.footer {
+  text-align: center;
+  padding: 6px;
+  font-size: 11px;
+  color: var(--accent-dim);
+  letter-spacing: 1px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+/* Column header row */
+.col-headers {
+  display: flex;
+  align-items: center;
+  padding: 2px 10px 4px;
+  font-size: 10px;
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 1px;
+  color: var(--gray);
+  flex-shrink: 0;
+}
+.ch-rank   { width: 40px; text-align: center; flex-shrink: 0; }
+.ch-name   { flex: 1; margin-left: 10px; }
+.ch-pts    { min-width: 70px; text-align: right; margin-left: 8px; flex-shrink: 0; color: var(--accent-dim); }
+.ch-part   { min-width: 44px; text-align: center; margin-left: 8px; flex-shrink: 0; color: var(--accent-dim); }
+.ch-gal    { min-width: 62px; text-align: right; margin-left: 8px; flex-shrink: 0; color: var(--accent2-dim); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>LUSTFUL FUCKERS</h1>
+  <div class="subtitle">LIVE SCOREBOARD</div>
+</div>
+
+<div class="phase-bar">
+  <div class="phase-pill" id="pill-10">TOP 10</div>
+  <div class="phase-pill" id="pill-5">TOP 5</div>
+  <div class="phase-pill" id="pill-3">TOP 3</div>
+</div>
+
+<div class="board-container">
+  <div class="phase-title" id="phase-title">TOP 10 SCORES</div>
+  <div class="col-headers" id="col-headers">
+    <div class="ch-rank">#</div>
+    <div class="ch-name">PLAYER</div>
+    <div class="ch-pts">PTS</div>
+    <div class="ch-part">💞</div>
+    <div class="ch-gal">🍆 GALS</div>
+  </div>
+  <div class="leaderboard" id="leaderboard"></div>
+  <div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div>
+</div>
+
+<div class="footer">⚔ LUSTFUL FUCKERS SCOREBOARD ⚔</div>
+
+<script>
+// ══════════════════════════════════════════
+// SCOREBOARD DATA STORE
+// ══════════════════════════════════════════
+
+// In-memory store — populated by POST from LSL
+let players = {};
+
+// Phases
+const PHASES = [
+  { key: 'top10', count: 10, label: 'TOP 10 SCORES', pill: 'pill-10', cls: 'top10' },
+  { key: 'top5',  count: 5,  label: 'TOP 5 SPOTLIGHT', pill: 'pill-5', cls: 'top5' },
+  { key: 'top3',  count: 3,  label: '🏆 CHAMPIONS 🏆', pill: 'pill-3', cls: 'top3' },
+];
+const CYCLE_MS = 45000; // 45 seconds per phase
+let currentPhase = 0;
+let cycleStart = Date.now();
+
+// ══════════════════════════════════════════
+// API — receive scores via URL params or postMessage
+// ══════════════════════════════════════════
+
+// Accept scores via URL param from LSL llSetPrimMediaParams:
+// ?d=Name1~pts~partners,Name2~pts~partners,...&t=timestamp
+function parseURLScores() {
+  const params = new URLSearchParams(window.location.search);
+  const data = params.get('d');
+  if (data) {
+    const entries = data.split(',');
+    const newPlayers = {};
+    entries.forEach((entry, i) => {
+      const parts = entry.split('~');
+      if (parts.length >= 3) {
+        const name = parts[0].replace(/\+/g, ' ');
+        const pts = parseInt(parts[1]) || 0;
+        const partners = parseInt(parts[2]) || 0;
+        newPlayers['p' + i] = { name, pts, partners };
+      }
+    });
+    if (Object.keys(newPlayers).length > 0) {
+      players = newPlayers;
+    }
+  }
+}
+
+// In-memory only — LSL refreshes URL with latest data every 10s
+function saveToStorage() { /* no-op: in-memory only */ }
+function loadFromStorage() { /* no-op: in-memory only */ }
+
+// ══════════════════════════════════════════
+// RENDERING
+// ══════════════════════════════════════════
+
+const medals = ['🥇', '🥈', '🥉'];
+
+function getSorted() {
+  return Object.values(players).sort((a, b) => b.pts - a.pts);
+}
+
+// Convert points to gallons (128 pts = 1 gallon)
+function toGallons(pts) {
+  const gals = pts / 128;
+  if (gals < 0.01) return '< 0.01';
+  if (gals >= 100) return gals.toFixed(0);
+  if (gals >= 10)  return gals.toFixed(1);
+  return gals.toFixed(2);
+}
+
+function renderPhase(phase) {
+  const phaseTitle = document.getElementById('phase-title');
+  const board = document.getElementById('leaderboard');
+  const colHeaders = document.getElementById('col-headers');
+  const sorted = getSorted();
+
+  // Update pills
+  document.querySelectorAll('.phase-pill').forEach(p => p.classList.remove('active'));
+  document.getElementById(phase.pill).classList.add('active');
+
+  // Update title
+  phaseTitle.textContent = phase.label;
+  phaseTitle.className = 'phase-title ' + phase.cls;
+
+  // Hide col headers in podium mode
+  const isPodium = phase.key === 'top3';
+  colHeaders.style.display = isPodium ? 'none' : 'flex';
+
+  // Clear board
+  board.innerHTML = '';
+
+  if (sorted.length === 0) {
+    board.innerHTML = '<div class="no-data"><div class="icon">💋</div>WAITING FOR PLAYERS</div>';
+    return;
+  }
+
+  const show = sorted.slice(0, phase.count);
+  const maxPts = show.length > 0 ? show[0].pts : 1;
+
+  show.forEach((p, i) => {
+    const row = document.createElement('div');
+    const rankClass = i < 3 ? ` rank-${i+1}` : '';
+    const podiumClass = isPodium ? ' podium' : '';
+    row.className = `player-row${rankClass}${podiumClass}`;
+    row.style.animationDelay = `${i * 0.06}s`;
+
+    const rankDisplay = i < 3
+      ? `<span class="medal">${medals[i]}</span>`
+      : `<span class="rank-num">${i + 1}</span>`;
+
+    const gallons = toGallons(p.pts);
+    const partnerHTML = p.partners > 0 ? p.partners : '—';
+
+    if (isPodium) {
+      const pct = maxPts > 0 ? (p.pts / maxPts * 100) : 0;
+      const barHTML = `
+        <div class="score-bar-wrap">
+          <div class="score-bar-fill" style="width: ${pct}%"></div>
+        </div>`;
+      row.innerHTML = `
+        <div style="display:flex;align-items:center;width:100%">
+          <div class="rank-num">${rankDisplay}</div>
+          <div class="player-name">${escapeHTML(p.name)}</div>
+          <div class="player-pts">${p.pts.toLocaleString()} pts</div>
+          <div class="partner-count">${partnerHTML}</div>
+          <div class="player-gallons">${gallons} gal</div>
+        </div>
+        ${barHTML}
+      `;
+      row.style.flexWrap = 'wrap';
+    } else {
+      row.innerHTML = `
+        <div class="rank-num">${rankDisplay}</div>
+        <div class="player-name">${escapeHTML(p.name)}</div>
+        <div class="player-pts">${p.pts.toLocaleString()}</div>
+        <div class="partner-count">${partnerHTML}</div>
+        <div class="player-gallons">${gallons} gal</div>
+      `;
+    }
+
+    board.appendChild(row);
+  });
+}
+
+function escapeHTML(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ══════════════════════════════════════════
+// TIMER BAR + CYCLE
+// ══════════════════════════════════════════
+
+function updateTimerBar() {
+  const elapsed = Date.now() - cycleStart;
+  const pct = Math.min(100, (elapsed / CYCLE_MS) * 100);
+  document.getElementById('timer-fill').style.width = pct + '%';
+}
+
+function cycle() {
+  const phase = PHASES[currentPhase];
+  renderPhase(phase);
+  cycleStart = Date.now();
+
+  // Reset timer bar
+  const tf = document.getElementById('timer-fill');
+  tf.style.transition = 'none';
+  tf.style.width = '0%';
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      tf.style.transition = `width ${CYCLE_MS / 1000}s linear`;
+      tf.style.width = '100%';
+    });
+  });
+
+  currentPhase = (currentPhase + 1) % PHASES.length;
+}
+
+// ══════════════════════════════════════════
+// POLL FOR NEW SCORES (check URL params periodically)
+// The LSL script will reload the media URL with new params
+// We also check localStorage for cross-tab updates
+// ══════════════════════════════════════════
+
+function pollScores() {
+  parseURLScores();
+  loadFromStorage();
+  // Re-render current phase to reflect updates
+  const displayPhase = (currentPhase + PHASES.length - 1) % PHASES.length;
+  renderPhase(PHASES[displayPhase]);
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+
+loadFromStorage();
+parseURLScores();
+
+// Start cycle
+cycle();
+setInterval(cycle, CYCLE_MS);
+
+// Poll for new score data every 5 seconds
+setInterval(pollScores, 5000);
+
+// ══════════════════════════════════════════
+// DEMO DATA (remove in production — or keep for testing)
+// If no players exist, populate with demo data so the
+// board isn't empty on first load. LSL scores override.
+// ══════════════════════════════════════════
+// Empty state is handled by renderPhase — shows "WAITING FOR PLAYERS"
+</script>
+<script data-pplx-inline-edit>
+(function(){
+  if(window===window.top)return;
+  function inlineAll(orig,clone){
+    if(orig.nodeType!==1)return;
+    try{
+      var cs=getComputedStyle(orig);
+      var t='';
+      for(var i=0;i<cs.length;i++){t+=cs[i]+':'+cs.getPropertyValue(cs[i])+';';}
+      clone.style.cssText=t;
+    }catch(e){}
+    var oc=orig.children,cc=clone.children;
+    for(var j=0;j<oc.length&&j<cc.length;j++){inlineAll(oc[j],cc[j]);}
+  }
+  function stripExternal(clone){
+    var imgs=clone.querySelectorAll('img');
+    for(var i=0;i<imgs.length;i++){
+      var s=imgs[i].getAttribute('src');
+      if(s&&!s.startsWith('data:'))imgs[i].removeAttribute('src');
+    }
+    var all=clone.querySelectorAll('*');
+    for(var i=0;i<all.length;i++){
+      var st=all[i].style.cssText;
+      if(st&&st.indexOf('url(')>=0){
+        all[i].style.cssText=st.replace(/url\(["']?(?!data:)[^)"']*["']?\)/gi,'none');
+      }
+    }
+  }
+  window.addEventListener('message',function(e){
+    if(!e.data||e.data.type!=='INLINE_EDIT_CAPTURE_REQUEST')return;
+    var scrollX=window.scrollX||window.pageXOffset||0;
+    var scrollY=window.scrollY||window.pageYOffset||0;
+    var w=window.innerWidth,h=window.innerHeight;
+    try{
+      var clone=document.documentElement.cloneNode(true);
+      var rm=clone.querySelectorAll('script,link[rel="stylesheet"],style');
+      for(var i=0;i<rm.length;i++){rm[i].remove();}
+      inlineAll(document.documentElement,clone);
+      stripExternal(clone);
+      var html=new XMLSerializer().serializeToString(clone);
+      var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">'
+        +'<foreignObject width="100%" height="100%">'
+        +'<div xmlns="http://www.w3.org/1999/xhtml" style="width:'+w+'px;height:'+h+'px;overflow:hidden">'
+        +'<div style="transform:translate(-'+scrollX+'px,-'+scrollY+'px);transform-origin:top left">'
+        +html+'</div></div></foreignObject></svg>';
+      var svgUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+      var img=new Image();
+      img.onload=function(){
+        var c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0);
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:c.toDataURL('image/png'),scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.onerror=function(){
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.src=svgUrl;
+    }catch(err){
+      window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+    }
+  });
+})();
+</script></body>
+</html>
